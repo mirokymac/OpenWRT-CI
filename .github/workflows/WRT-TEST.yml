@@ -14,7 +14,7 @@ on:
           - MEDIATEK
           - ROCKCHIP
           - X86
-          - X86-minimal
+          - X86_minimal
           - IPQ50XX-WIFI-YES
           - IPQ50XX-WIFI-NO
           - IPQ60XX-WIFI-YES
