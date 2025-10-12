@@ -1,0 +1,172 @@
+# 设备平台
+CONFIG_TARGET_x86_64=y
+# CONFIG_TARGET_x86 is not set # 移除 32 位支持，精简编译
+
+# 设备列表
+# CONFIG_TARGET_ALL_PROFILES is not set # 移除所有 profile，选择通用 x86-64 profile
+# 为了精简，建议只选择一个合适的 profile，例如:
+CONFIG_TARGET_x86_64_DEVICE_generic=y
+
+
+# WIFI 驱动 (全部移除，虚拟机不需要物理无线网卡驱动及配套 daemon)
+# CONFIG_PACKAGE_kmod-mt7915e is not set
+# CONFIG_PACKAGE_kmod-mt7921e is not set
+# CONFIG_PACKAGE_kmod-mt7925e is not set
+# CONFIG_PACKAGE_kmod-mt7921-common is not set
+# CONFIG_PACKAGE_kmod-mt792x-common is not set
+# CONFIG_PACKAGE_kmod-mt7915-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7916-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7921-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7922-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7925-firmware is not set
+# CONFIG_PACKAGE_wpad-openssl is not set
+
+# 组件调整 (X86.txt)
+CONFIG_GRUB_IMAGES=y
+CONFIG_VMDK_IMAGES=y
+CONFIG_TARGET_KERNEL_PARTSIZE=128
+CONFIG_TARGET_ROOTFS_PARTSIZE=1024
+CONFIG_TARGET_ROOTFS_EXT4FS=n
+
+# 内核模块调整 (X86.txt - 全部移除，虚拟机不需要物理硬件监控和看门狗)
+# CONFIG_PACKAGE_kmod-hwmon-w83627ehf is not set
+# CONFIG_PACKAGE_kmod-hwmon-w83627hf is not set
+# CONFIG_PACKAGE_kmod-w83627hf-wdt is not set
+
+# 插件调整 (X86.txt - luci-app-dockerman 移除)
+# CONFIG_PACKAGE_luci-app-dockerman is not set
+
+# 科学插件调整 (GENERAL.txt - luci-app-homeproxy 移除，由 OpenClash 替代)
+# CONFIG_PACKAGE_luci-app-homeproxy is not set
+
+# ----- OpenClash 及其依赖 (新增/强制包含) -----
+CONFIG_PACKAGE_luci-app-openclash=y
+# OpenClash 通常需要以下依赖 (具体可能因 OpenClash 版本和源码不同而异，这里列出常见的):
+CONFIG_PACKAGE_clash=y              # Clash 主程序 (或 clash-core, clash-meta 等，根据 OpenClash 源码决定)
+CONFIG_PACKAGE_clash-tun=y          # Clash tun 模式支持，通常与 kmod-tun 配合
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_dnsmasq_full_ipset=y # 部分 Clash 规则可能需要 ipset 支持，dnsmasq full 通常包含
+# 确保 libcap/libcap-bin 也包含，通常 OpenClash 依赖
+CONFIG_PACKAGE_libcap=y
+CONFIG_PACKAGE_libcap-bin=y
+# 额外建议的一些工具和库，可能不是强依赖，但对 clash 运行或 LuCI 界面有帮助:
+CONFIG_PACKAGE_ip-full=y             # (已在原始配置中保留，此处强调其必要性)
+CONFIG_PACKAGE_ipset=y               # ipset 工具
+# --------------------------------------------------
+
+# 增加插件 (GENERAL.txt - 根据分析结果进行保留或移除)
+CONFIG_PACKAGE_luci-app-autoreboot=y    # 保留
+CONFIG_PACKAGE_luci-app-netspeedtest=y  # 保留
+CONFIG_PACKAGE_luci-app-tailscale=y     # 保留
+
+# CONFIG_PACKAGE_luci-app-gecoosac is not set # 移除
+# CONFIG_PACKAGE_luci-app-partexp is not set # 移除
+# CONFIG_PACKAGE_luci-app-samba4 is not set # 移除
+# CONFIG_PACKAGE_luci-app-upnp is not set # 移除
+# CONFIG_PACKAGE_luci-app-wolplus is not set # 移除
+
+# 删除插件 (GENERAL.txt)
+CONFIG_PACKAGE_luci-app-wol=n # 保留原始设定
+
+# 参数调整 (GENERAL.txt - 根据分析结果进行保留或移除)
+CONFIG_CCACH=y # 保留
+CONFIG_TARGET_ROOTFS_INITRAMFS=n # 保留
+
+# CONFIG_DEVEL is not set # 移除
+# CONFIG_TARGET_MULTI_PROFILE is not set # 移除
+# CONFIG_TARGET_PER_DEVICE_ROOTFS is not set # 移除
+
+
+# 内核调整 (GENERAL.txt - 根据分析结果进行保留或移除)
+# 网络相关 (部分保留，部分移除)
+CONFIG_PACKAGE_kmod-inet-diag=y
+CONFIG_PACKAGE_kmod-inet-mptcp-diag=y
+CONFIG_PACKAGE_kmod-netlink-diag=y
+CONFIG_PACKAGE_kmod-nft-arp=y
+CONFIG_PACKAGE_kmod-nft-bridge=y
+CONFIG_PACKAGE_kmod-nft-connlimit=y
+CONFIG_PACKAGE_kmod-nft-core=y
+CONFIG_PACKAGE_kmod-nft-dup-inet=y
+CONFIG_PACKAGE_kmod-nft-fib=y
+CONFIG_PACKAGE_kmod-nft-fullcone=y
+CONFIG_PACKAGE_kmod-nft-nat=y
+CONFIG_PACKAGE_kmod-nft-netdev=y
+CONFIG_PACKAGE_kmod-nft-offload=y
+CONFIG_PACKAGE_kmod-nft-queue=y
+CONFIG_PACKAGE_kmod-nft-socket=y
+CONFIG_PACKAGE_kmod-nft-tproxy=y
+CONFIG_PACKAGE_kmod-nft-xfrm=y
+CONFIG_PACKAGE_kmod-tun=y
+CONFIG_PACKAGE_kmod-wireguard=y # Tailscale 依赖
+
+# CONFIG_PACKAGE_kmod-bonding is not set # 移除
+# CONFIG_PACKAGE_kmod-dsa is not set # 移除
+
+# 文件系统相关 (全部移除多余的)
+# CONFIG_PACKAGE_kmod-fs-btrfs is not set # 移除
+# CONFIG_PACKAGE_kmod-fuse is not set # 移除
+# CONFIG_PACKAGE_kmod-mtd-rw is not set # 移除
+
+# USB 相关 (只保留 kmod-usb-core，其他全部移除)
+CONFIG_PACKAGE_kmod-usb-core=y # 基础 USB 支持
+
+# CONFIG_PACKAGE_kmod-usb3 is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-audio is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-dwc3 is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-cdc-eem is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-cdc-ether is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-cdc-mbim is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-cdc-ncm is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-cdc-subset is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-huawei-cdc-ncm is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-ipheth is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-qmi-wwan is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-qmi-wwan-fibocom is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-qmi-wwan-quectel is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-rndis is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-rtl8150 is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-net-rtl8152 is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-ohci is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-storage is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-storage-extras is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-storage-uas is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-uhci is not set # 移除
+# CONFIG_PACKAGE_kmod-usb-xhci is not set # 移除
+
+# 其他
+# CONFIG_PACKAGE_kmod-sound-core is not set # 移除
+
+# 组件调整 (GENERAL.txt - 根据分析结果进行保留或移除)
+CONFIG_PACKAGE_autocore=y
+CONFIG_PACKAGE_blkid=y
+CONFIG_PACKAGE_cfdisk=y
+CONFIG_PACKAGE_cgdisk=y
+CONFIG_PACKAGE_dmesg=y
+CONFIG_PACKAGE_fdisk=y
+CONFIG_PACKAGE_gdisk=y
+CONFIG_PACKAGE_htop=y
+CONFIG_PACKAGE_iperf3=y
+CONFIG_PACKAGE_ip-full=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_luci-base=y
+CONFIG_PACKAGE_luci-compat=y
+CONFIG_PACKAGE_luci-lib-base=y
+CONFIG_PACKAGE_luci-lib-ipkg=y
+CONFIG_PACKAGE_luci-lua-runtime=y
+CONFIG_PACKAGE_openssh-keygen=y
+CONFIG_PACKAGE_openssh-sftp-server=y
+CONFIG_PACKAGE_openssl-util=y
+CONFIG_PACKAGE_sfdisk=y
+CONFIG_PACKAGE_sgdisk=y
+
+# CONFIG_PACKAGE_automount is not set # 移除
+# CONFIG_PACKAGE_coremark is not set # 移除
+# CONFIG_PACKAGE_cpufreq is not set # 移除
+# CONFIG_PACKAGE_libimobiledevice is not set # 移除
+# CONFIG_PACKAGE_luci-proto-relay is not set # 移除
+# CONFIG_PACKAGE_mmc-utils is not set # 移除
+# CONFIG_PACKAGE_nand-utils is not set # 移除
+# CONFIG_PACKAGE_proto-bonding is not set # 移除
+# CONFIG_PACKAGE_usbmuxd is not set # 移除
+# CONFIG_PACKAGE_usbutils is not set # 移除
